@@ -13,8 +13,12 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+//Enums
+use App\Enums\AttributeSelectType;
+
 // Inputs
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 
 // Columns
@@ -33,6 +37,9 @@ class AttributeResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name'),
+                Select::make('option_type')
+                    ->label('Select type')
+                    ->options(AttributeSelectType::class),
                 Repeater::make('values')
                 ->relationship('values')
                 ->schema([

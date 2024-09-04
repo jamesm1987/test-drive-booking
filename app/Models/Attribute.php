@@ -4,14 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\AttributeSelectType;
 
 class Attribute extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name'
-        
+        'name',
+        'option_type',  
+    ];
+    
+    protected $casts = [
+        'option_type' => AttributeSelectType::class,
     ];
 
     public function values()
