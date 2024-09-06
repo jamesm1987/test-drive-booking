@@ -25,4 +25,26 @@ class EditVehicle extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function afterSave(): void
+    {
+        $attributes = $this->form->getState()['attributes'];
+
+        $syncData = [];
+
+        foreach ($attributes as $attribute) {
+            $attributeId = $attribute['attribute_id'];
+            $valueIds = $attribute['attribute_value_ids'];
+
+            foreach ($valueIds as $valueId) {
+                $syncData[] = [
+                    'attribute_id' => $attributeId,
+                    'attribute_value_id' => $valueId,
+                ];
+            }
+        }
+        $this->record->attributes()->sync(
+            $syncData
+        );
+    }
 }

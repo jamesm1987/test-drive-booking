@@ -29,13 +29,11 @@ class Vehicle extends Model
 
     public function attributeValues()
     {
-        return $this->belongsToMany(AttributeValue::class, 'attribute_vehicle')
-            ->withPivot('attribute_id')
-            ->withTimestamps();
+        return $this->belongsToMany(AttributeValue::class, 'attribute_vehicle', 'vehicle_id', 'attribute_value_id')
+                    ->withPivot('attribute_id')
+                    ->withTimestamps();
     }
-
     
-
     public function events()
     {
         return $this->belongsToMany(Event::class)->withPivot('max_bookings_per_timeslot')->withTimestamps();
