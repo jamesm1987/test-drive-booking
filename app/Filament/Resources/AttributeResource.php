@@ -39,7 +39,11 @@ class AttributeResource extends Resource
                 TextInput::make('name'),
                 Select::make('option_type')
                     ->label('Select type')
-                    ->options(AttributeSelectType::class),
+                    ->options(
+                        collect(AttributeSelectType::cases())
+                        ->mapWithKeys(fn($case) => [$case->value => $case->label()])
+                        ->toArray()
+                    ),
                 Repeater::make('values')
                 ->relationship('values')
                 ->schema([

@@ -20,10 +20,18 @@ class Vehicle extends Model
 
     ];
 
-
     public function attributes()
     {
-        return $this->hasMany(AttributeVehicle::class);
+        return $this->belongsToMany(Attribute::class, 'attribute_vehicle')
+                    ->withPivot('attribute_value_id')
+                    ->withTimestamps();
+    }
+
+    public function attributeValues()
+    {
+        return $this->belongsToMany(AttributeValue::class, 'attribute_vehicle')
+            ->withPivot('attribute_id')
+            ->withTimestamps();
     }
 
     
@@ -37,14 +45,6 @@ class Vehicle extends Model
     public function bookings()
     {
         return $this->hasMany(Booking::class);
-    }
-
-    public function attributeValues()
-    {
-        return $this->belongsToMany(AttributeValue::class, 'attribute_vehicle')
-            ->using(AttributeVehicle::class)
-            ->withPivot('attribute_id')
-            ->withTimestamps();
     }
 
     public function manufacturer()

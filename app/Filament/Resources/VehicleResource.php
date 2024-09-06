@@ -56,30 +56,22 @@ class VehicleResource extends Resource
             ->nullable()
             ->required(),
 
-        Repeater::make('attributes')
-            ->label('Attributes')
-            ->relationship('attributes')
-            ->schema([
-                Select::make('attribute_id')
-                    ->label('Attribute')
-                    ->relationship('attribute', 'name')
-                    ->required()
-                    ->reactive(),
-
-                Select::make('attribute_value_id')
-                    ->label('Attribute Value')
-                    ->options(function (callable $get) {
-                        $attributeId = $get('attribute_id');
-                        if ($attributeId) {
-                            return AttributeValue::where('attribute_id', $attributeId)
-                                ->pluck('name', 'id');
-                        }
-                        return [];
-                    })
-                    ->required(),
+            Repeater::make('attributes')
+                ->relationship('attributes')
+                ->schema([
+                    Select::make('attribute_id')
+                        ->relationship('attributes', 'name')
+                        ->label('Attribute')
+                        ->required(),
+                    Select::make('attribute_value_ids')
+                        ->relationship('attributeValues', 'value')
+                        ->label('Values')
+                        ->multiple()
+                        ->required(),
             ])
+            ->label('Attributes & Values')
             ->columns(2)
-            ->minItems(1),
+            ->collapsed(false)
 
         // foreach ($attributes as $key => $attribute) {
         //     $schema[] = Select::make("attributeValues")
@@ -145,4 +137,12 @@ class VehicleResource extends Resource
             'edit' => Pages\EditVehicle::route('/{record}/edit'),
         ];
     }
+
+    public function afterSave(): void
+{
+    $selectedAttributeValues = $model->form->getState()['attribute_value_id'];
+
+    // Assuming `$this->record` is your vehicle or related model
+    $model->form->attributeValues()->sync($selectedAttributeValues);
+}
 }
