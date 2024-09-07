@@ -2,10 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class AttributeVehicle extends Pivot
+class AttributeVehicle extends Model
 {
+    use HasFactory;
+
+    protected $table = 'attribute_vehicle';
+
     protected $fillable = [
         'vehicle_id',
         'attribute_id',
@@ -19,7 +24,7 @@ class AttributeVehicle extends Pivot
 
     public function attribute()
     {
-        return $this->belongsTo(Attribute::class);
+        return $this->belongsTo(Attribute::class, 'attribute_id');
     }
 
     public function vehicle()

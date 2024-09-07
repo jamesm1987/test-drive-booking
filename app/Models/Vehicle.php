@@ -50,5 +50,10 @@ class Vehicle extends Model
         return $this->belongsTo(Manufacturer::class);
     } 
 
+    public function vehicleAttributes()
+    {
+        return $this->hasMany(AttributeVehicle::class, 'vehicle_id', 'id');
+    }
+
 
 }

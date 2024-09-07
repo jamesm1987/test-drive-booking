@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\Manufacturer;
 
@@ -21,6 +22,7 @@ use App\Models\Manufacturer;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\MultiSelect;
 use Filament\Forms\Components\Repeater;
 
 // Columns
@@ -51,59 +53,31 @@ class VehicleResource extends Resource
 
         Select::make("manufacturer_id")
             ->label('Manufacturer')
-            ->relationship('manufacturer')
-            ->options($manufacturers->pluck('name', 'id'))
+            ->relationship('manufacturer', 'name')
             ->nullable()
             ->required(),
 
-            Repeater::make('attributes')
-            ->schema([
-                Select::make('attribute_id')
-                    ->options(\App\Models\Attribute::all()->pluck('name', 'id'))
-                    ->label('Attribute')
-                    ->required(),
-                Select::make('attribute_value_ids')
-                    ->label('Values')
-                    ->options(function (callable $get) {
-                        $attributeId = $get('attribute_id');
-                        if ($attributeId) {
-                            return AttributeValue::where('attribute_id', $attributeId)
-                                                 ->pluck('name', 'id');
-                        }
-                        return [];
-                    })
-                    ->multiple()
-                    ->required(),
-            ])
-            ->label('Attributes & Values')
-            ->columns(2)
-            ->collapsed(false),
+        Repeater::make('vehicleAttributes')
+                ->label('Attributes')
+                ->relationship()
+                ->schema([
+                    Select::make('attribute_id')
+                        ->label('Attribute')
+                        ->options(Attribute::pluck('name', 'id'))
+                        ->reactive()
+                        ->required(),
+                    Select::make('attribute_value_id')
+                        ->label('Value')
+                        ->options(function (callable $get) {
+                            $attributeId = $get('attribute_id');
+                            return $attributeId
+                                ? AttributeValue::where('attribute_id', $attributeId)->pluck('name', 'id')
+                            : [];
+                        })
+                        ->required(),
+                    ])
 
-        // foreach ($attributes as $key => $attribute) {
-        //     $schema[] = Select::make("attributeValues")
-        //         ->label($attribute->name)
-        //         ->options($attribute->values()->pluck('name', 'id'))
-        //         ->relationship('attributeValues', 'name')
-        //         ->nullable();
-        // }
-
-
-        // foreach ($attributes as $attribute) {
-            
-        //     $selectedValues = $form->model->attributeValues
-        //     ->where('attribute_id', $attribute->id)
-        //     ->pluck('id')
-        //     ->toArray();
-        //     dd($selectedValues);
-    
-        //     $schema[] = Select::make("attributes.{$attribute->id}")
-        //         ->label($attribute->name)
-        //         ->options($attribute->values->pluck('name', 'id'))
-        //         ->default(6)
-        //         ->nullable();
-        // }
-    
-    ]);
+            ]);
 
     }
 
@@ -144,10 +118,26 @@ class VehicleResource extends Resource
         ];
     }
 
-    public function afterSave(): void
+    public static function beforeFill($record, $data)
     {
-        $selectedAttributeValues = $model->form->getState()['attribute_value_ids'];
-        dd($selectedAttributeValues);
-        $model->attributeValues()->sync($selectedAttributeValues);
+        $data['attributes'] = $record->attributes->map(function ($attribute) {
+            return [
+                'attribute_id' => $attribute->id,
+                'attribute_value_id' => $attribute->pivot->attribute_value_id,
+            ];
+        })->toArray();
+
+        return $data;
+    }
+
+    public static function afterSave($record, $data)
+    {
+        $attributes = collect($data['attributes'])->mapWithKeys(function ($attribute) {
+            return [
+                $attribute['attribute_id'] => ['attribute_value_id' => $attribute['attribute_value_id']],
+            ];
+        });
+
+        $record->attributes()->sync($attributes);
     }
 }

@@ -19,15 +19,16 @@ class Attribute extends Model
         'option_type' => AttributeSelectType::class,
     ];
 
+
+    public function values()
+    {
+        return $this->hasMany(AttributeValue::class);
+    }
+
     public function vehicles()
     {
         return $this->belongsToMany(Vehicle::class, 'attibute_vehicle')
             ->withPivot('attribute_value_id')
             ->withTimestamps();
-    }
-
-    public function values()
-    {
-        return $this->hasMany(AttributeValue::class);
     }
 }
