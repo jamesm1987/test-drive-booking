@@ -12,7 +12,8 @@ class TimeSlot extends Model
     protected $fillable = [
         'event_id', 
         'start_time', 
-        'end_time'
+        'end_time',
+        'time_slot_intervals'
     ];
 
     public function event()

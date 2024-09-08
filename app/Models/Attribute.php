@@ -27,8 +27,6 @@ class Attribute extends Model
 
     public function vehicles()
     {
-        return $this->belongsToMany(Vehicle::class, 'attibute_vehicle')
-            ->withPivot('attribute_value_id')
-            ->withTimestamps();
+        return $this->belongsToMany(Vehicle::class, 'attibute_vehicle');
     }
 }

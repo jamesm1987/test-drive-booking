@@ -15,11 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->string('image_url');
+            $table->string('img_url');
             $table->date('start_date');
             $table->date('end_date');
             $table->time('start_time');
             $table->time('end_time');
+            $table->integer('time_slot_interval')->unsigned()->default(30);
             $table->timestamps();
         });
     }

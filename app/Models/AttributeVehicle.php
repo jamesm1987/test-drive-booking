@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class AttributeVehicle extends Model
+class AttributeVehicle extends Pivot
 {
-    use HasFactory;
 
     protected $table = 'attribute_vehicle';
 
@@ -15,6 +13,10 @@ class AttributeVehicle extends Model
         'vehicle_id',
         'attribute_id',
         'attribute_value_id'
+    ];
+
+    protected $casts = [
+        'attribute_value_id' => 'array',
     ];
     
     public function attributeValue()

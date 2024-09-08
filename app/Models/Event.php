@@ -11,10 +11,13 @@ class Event extends Model
 
     protected $fillable = [
         'name',
+        'slug',
+        'img_url',
         'start_date',
         'end_date',
         'start_time',
-        'end_time'
+        'end_time',
+        'time_slot_interval'
     ];
 
     public function vehicles()

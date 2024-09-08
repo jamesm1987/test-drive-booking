@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid');
-            $table->foreignId('event_id')->constrained();
             $table->foreignId('time_slot_id')->constrained()->onDelete('cascade');
             $table->foreignId('vehicle_id')->nullable()->constrained()->onDelete('cascade'); // Nullable for cases where vehicle is assigned later
             $table->timestamp('cancelled_at')->nullable();
@@ -23,7 +22,7 @@ return new class extends Migration
             $table->string('email');
             $table->timestamps();
 
-            $table->unique(['event_id', 'vehicle_id', 'time_slot_id'], 'event_vehicle_timeslot_unique');
+            $table->unique(['vehicle_id', 'time_slot_id'], 'vehicle_timeslot_unique');
 
         });
     }

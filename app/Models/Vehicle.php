@@ -20,18 +20,25 @@ class Vehicle extends Model
 
     ];
 
+
+    /**
+     * Get the attributes associated with the vehicle.
+     */
     public function attributes()
     {
         return $this->belongsToMany(Attribute::class, 'attribute_vehicle')
-                    ->withPivot('attribute_value_id')
-                    ->withTimestamps();
+            ->withPivot('attribute_value_id')
+            ->withTimestamps();
     }
 
+    /**
+     * Get the attribute values associated with the vehicle.
+     */
     public function attributeValues()
     {
         return $this->belongsToMany(AttributeValue::class, 'attribute_vehicle', 'vehicle_id', 'attribute_value_id')
-                    ->withPivot('attribute_id')
-                    ->withTimestamps();
+            ->withPivot('attribute_id')
+            ->withTimestamps();
     }
     
     public function events()
@@ -52,7 +59,7 @@ class Vehicle extends Model
 
     public function vehicleAttributes()
     {
-        return $this->hasMany(AttributeVehicle::class, 'vehicle_id', 'id');
+        return $this->hasMany(AttributeVehicle::class);
     }
 
 
