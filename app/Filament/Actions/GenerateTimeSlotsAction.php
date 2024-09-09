@@ -4,6 +4,7 @@ namespace App\Filament\Actions;
 
 use Filament\Forms\Components\Actions\Action;
 use Carbon\Carbon;
+use App\Models\TimeSlot;
 
 class GenerateTimeSlotsAction extends Action
 {
@@ -27,39 +28,36 @@ class GenerateTimeSlotsAction extends Action
                 $event = $this->record ? $this->record->id : null;
                 $startTime = $get('start_time');
                 $endTime = $get('end_time');
-                $interval = $get('time_slot_interval');
+                $interval = intval($get('time_slot_interval'));
 
                 $start = Carbon::parse($startTime);
-                $end = Carbon::parse($endTime)->subMinutes($interval);
-
-                $intervals = [
-                    '30 Minutes' => 30,
-                    '1 Hour' => 60,
-                ];
-
-                $timeSlotInterval = $intervals[$interval] ?? 30; // Default to 30 minutes
+                $end = Carbon::parse($endTime);
 
                 // Array to hold generated time slots
                 $generatedTimeSlots = [];
 
                 // Loop to generate time slots
                 while ($start->lt($end)) {
-                    $nextSlot = $start->copy()->addMinutes($timeSlotInterval);
+                    $nextSlot = $start->copy()->addMinutes($interval);
 
-                    if ($nextSlot->gt($end)) {
+                    if ($nextSlot->greaterThan($end)) {
                         break;
                     }
 
-                    $generatedTimeSlots[] = [
-                        'event_id' => $this->record ? $this->record->id : null,
-                        'start_time' => $start->format('H:i'),
-                        'end_time' => $nextSlot->format('H:i'),
-                    ];
+                    $generatedTimeSlots[] = new TimeSlot([
+                            'event_id' => $this->record ? $this->record->id : null,
+                            'start_time' => $start->format('H:i'),
+                            'end_time' => $nextSlot->format('H:i'),
+                    
+                    ]);
 
                     $start = $nextSlot;
                 }
 
-                dd($generatedTimeSlots);
+                
+                $this->record->timeslots()->delete();
+
+                $this->record->timeslots()->saveMany($generatedTimeSlots);
 
                 info('Generated time slots:', $generatedTimeSlots);
             });
