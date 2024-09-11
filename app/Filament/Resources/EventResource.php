@@ -109,7 +109,8 @@ class EventResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\TimeslotsRelationManager::class,
+            RelationManagers\VehiclesRelationManager::class,
         ];
     }
 
