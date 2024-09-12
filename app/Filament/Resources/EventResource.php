@@ -110,7 +110,7 @@ class EventResource extends Resource
     {
         return [
             RelationManagers\TimeslotsRelationManager::class,
-            RelationManagers\VehiclesRelationManager::class,
+            RelationManagers\EventVehicleRelationManager::class,
         ];
     }
 

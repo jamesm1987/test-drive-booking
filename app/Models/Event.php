@@ -22,7 +22,7 @@ class Event extends Model
 
     public function vehicles()
     {
-        return $this->belongsToMany(Vehicle::class)->withPivot('max_bookings_per_timeslot')->withTimestamps();
+        return $this->belongsToMany(Vehicle::class, 'event_vehicle');
     }
 
     public function timeslots()
